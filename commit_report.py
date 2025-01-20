@@ -12,7 +12,7 @@ import lib.notify
 
 # pylint: disable=R0903
 class Repo:
-    """A class representing a collectin of git repos."""
+    """A class representing a collection of git repos."""
     SUPPORTED_LANGUAGES = {
         'Python': ['.py'],
         'Golang': ['.go'],
@@ -98,7 +98,7 @@ def main():
     parser.add_argument(
         '--debug',
         type=bool,
-        help='dispaly debugging info and don\'t mail the report')
+        help='display debugging info and don\'t mail the report')
     parser.add_argument(
         '--repos_dir',
         type=str,
