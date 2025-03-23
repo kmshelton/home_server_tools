@@ -25,6 +25,12 @@ class Repo:
 
     def __init__(self, repo_dir):
         os.chdir(repo_dir)
+        try:
+            subprocess.check_output('git rev-parse --is-inside-work-tree',
+                                    shell=True,
+                                    universal_newlines=True)
+        except subprocess.CalledProcessError:
+            raise ValueError(f"Directory '{repo_dir}' is not a git repository")
         self.name = os.path.basename(repo_dir)
         self.commits_from_last_day = str(
             subprocess.check_output('git log --oneline --since=\'1 day ago\'',
@@ -119,7 +125,11 @@ def main():
         if directory.is_dir():
             logging.debug('Initializing a Repo object for the %s directory',
                           str(directory))
-            repos.append(Repo(os.path.join(args.repos_dir, directory)))
+            try:
+                repos.append(Repo(os.path.joi(args.repos_dir, directory)))
+            except ValueError as e:
+                loggig.warig(str(e))
+                continue
 
     for repo in repos:
         logging.debug(str(repo))
