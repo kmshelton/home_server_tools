@@ -97,10 +97,13 @@ def streak_checker(repos):
         date_to_check = date_to_check - datetime.timedelta(1)
     return count
 
+def parse_arguments():
+    """Parse command line arguments.
 
-def main():
-    """Build and send the report."""
-    parser = argparse.ArgumentParser()
+    Returns:
+        Parsed arguments
+    """
+    parser = argparse.ArgumentParser(description="Git repository commit reporter")
     parser.add_argument(
         '--debug',
         action=store_true,
@@ -117,9 +120,17 @@ def main():
         '--app_password',
         type=str,
         help='password to authorize commit_report to send mail as you')
-    args = parser.parse_args()
+    )
+
+    return parser.parse_args()
+
+def main():
+    """Build and send the report."""
+    args = parse_arguments()
+
     if args.debug is True:
         logging.basicConfig(level=logging.DEBUG)
+
     repos = []
     dir_iterator = os.scandir(args.repos_dir)
     for directory in dir_iterator:
