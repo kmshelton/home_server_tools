@@ -127,9 +127,9 @@ def main():
             logging.debug('Initializing a Repo object for the %s directory',
                           str(directory))
             try:
-                repos.append(Repo(os.path.joi(args.repos_dir, directory)))
+                repos.append(Repo(os.path.join(args.repos_dir, directory)))
             except ValueError as e:
-                loggig.warig(str(e))
+                loggig.warning(str(e))
                 continue
 
     for repo in repos:
