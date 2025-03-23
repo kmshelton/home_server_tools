@@ -20,14 +20,15 @@ class RepoTests(unittest.TestCase):
         os.chdir(self.git_repo_dir)
         subprocess.run(["git", "init"], check=True)
 
-        with open(os.path.join(self.git_repo_dir, "test.py"), "w") as f:
+        with open(os.path.join(self.git_repo_dir, "test.py"),
+                  "w",
+                  encoding='utf-8') as f:
             f.write("print('Hello, world!')")
         subprocess.run(["git", "config", "user.email", "test@example.com"],
-                       check=True),
-        subprocess.run(["git", "config", "user.name", "Test user"],
-                       check=True),
-        subprocess.run(["git", "add", "."], check=True),
-        subprocess.run(["git", "commit", "-m", "Initial commit"], check=True),
+                       check=True)
+        subprocess.run(["git", "config", "user.name", "Test user"], check=True)
+        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "commit", "-m", "Initial commit"], check=True)
 
         self.non_git_dir = os.path.join(self.test_dir, "non_git_dir")
         os.mkdir(self.non_git_dir)
@@ -42,7 +43,7 @@ class RepoTests(unittest.TestCase):
     def test_valid_git_repo(self):
         """Test that a valid git repo initializes correctly."""
         try:
-            repo = Repo(self.git_repo_dir)
+            repo = Repo.from_directory(self.git_repo_dir)
             self.assertEqual(repo.name, "valid_repo")
         except ValueError:
             self.fail("Repo initialization raised ValueError unexpectedly!")
@@ -50,7 +51,7 @@ class RepoTests(unittest.TestCase):
     def test_non_git_directory(self):
         """Test that a non-git directory raises a ValueError."""
         with self.assertRaises(ValueError) as context:
-            Repo(self.non_git_dir)
+            Repo.from_directory(self.non_git_dir)
         self.assertIn("is not a git repository", str(context.exception))
 
 
