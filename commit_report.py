@@ -119,7 +119,7 @@ def parse_arguments():
     parser.add_argument(
         '--app_password',
         type=str,
-        help='password to authorize commit_report to send mail as you')
+        help='password to authorize commit_report to send mail as you'
     )
 
     return parser.parse_args()
