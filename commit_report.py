@@ -103,7 +103,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--debug',
-        type=bool,
+        action=store_true,
         help='display debugging info and don\'t mail the report')
     parser.add_argument(
         '--repos_dir',
