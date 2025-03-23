@@ -169,6 +169,9 @@ def main():
     email_subject = ''.join(['Commit Report ', str(datetime.datetime.now())])
 
     if not args.debug:
+        if not args.gmail_username or not args.app_password:
+            logging.error("Gmail username and app password required to send the report email.")
+            return 1
         lib.notify.mail(args.gmail_username, args.app_password, email_subject,
                         email_body)
 
