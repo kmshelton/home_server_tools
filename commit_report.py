@@ -182,7 +182,7 @@ def calculate_streak(repos: List[Repo]) -> int:
         for line in repo.commits.splitlines():
             # Example date from git log --date=short:
             # Date:   2019-10-27
-            match = re.search(r'^Date:\s.*(\d{4}-(\d.*)-(\d.*)', line)
+            match = re.search(r'^Date:\s.*(\d{4})-(\d+)-(\d+)', line)
             if match:
                 dates_with_a_commit.add(
                     datetime.date(
