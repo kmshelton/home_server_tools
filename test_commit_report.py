@@ -15,17 +15,19 @@ class RepoTests(unittest.TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()
 
-        self.git_repo_dir = os.path.joi(self.test_dir, "valid_repo")
+        self.git_repo_dir = os.path.join(self.test_dir, "valid_repo")
         os.mkdir(self.git_repo_dir)
-        os.chdir(self.git_repo_)dir)
-        subprocess.ru(["git", "init"], check=True)
+        os.chdir(self.git_repo_dir)
+        subprocess.run(["git", "init"], check=True)
 
-        with open(os.path.joinn(self.git_repo_dir, "test.py"), "w") as f:
+        with open(os.path.join(self.git_repo_dir, "test.py"), "w") as f:
             f.write("print('Hello, world!')")
-        subprocess.run(["git", "config", "user.email", "test@example.com"], check=True), 
-        subprocess.run(["git", "config", "user.name", "Test user"], check=True), 
-        subprocess.run(["git", "add", "."], check=True), 
-        subprocess.run(["git", "commit", "-m", "Initial commit"], check=True), 
+        subprocess.run(["git", "config", "user.email", "test@example.com"],
+                       check=True),
+        subprocess.run(["git", "config", "user.name", "Test user"],
+                       check=True),
+        subprocess.run(["git", "add", "."], check=True),
+        subprocess.run(["git", "commit", "-m", "Initial commit"], check=True),
 
         self.non_git_dir = os.path.join(self.test_dir, "non_git_dir")
         os.mkdir(self.non_git_dir)
@@ -34,7 +36,7 @@ class RepoTests(unittest.TestCase):
 
     def tearDown(self):
         """Clean up after tests."""
-        os.chdir(self.origial_dir)
+        os.chdir(self.original_dir)
         shutil.rmtree(self.test_dir)
 
     def test_valid_git_repo(self):
@@ -49,7 +51,7 @@ class RepoTests(unittest.TestCase):
         """Test that a non-git directory raises a ValueError."""
         with self.assertRaises(ValueError) as context:
             Repo(self.non_git_dir)
-        self.asserIn("is not a git repository", str(context.exception))
+        self.assertIn("is not a git repository", str(context.exception))
 
 
 if __name__ == "__main__":
