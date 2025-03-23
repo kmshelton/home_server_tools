@@ -108,6 +108,7 @@ def main():
     parser.add_argument(
         '--repos_dir',
         type=str,
+        required=True,
         help='directory that contains the repos that you want to report on')
     parser.add_argument('--gmail_username',
                         type=str,
