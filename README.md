@@ -1,6 +1,26 @@
-This utility generates a report about git repos and sends it out via email.
+# Home Server Tools
 
-It executes on my home server in the morning thanks to a cron job.  The crontab
+Like most nerds, I run a home server for things like personal git repos and a
+database of all my books. My current hardware is a Chromebox, and I have flashed
+it with SeaBIOS to enable Ubuntu.
+
+This collection of utilities runs on my home server.  The utilities:
+* generate a report of stats about my repos
+* generate a report of telemetry from the server itself
+* send out email with the reports
+
+Future work includes:
+* automatic backup of my repos
+
+## Email Configuration
+
+Using the email functionality requires
+[an app password](https://support.google.com/mail/answer/185833?hl=en).
+
+## Configuring Periodic Execution
+
+The venerable [cron](https://manpages.debian.org/unstable/cron/cron.8.en.html)
+is the best way to set up periodic execution of these utilities. My crontab
 looks something like this:
 
 ```
@@ -29,4 +49,63 @@ looks something like this:
 # m h  dom mon dow   command
 
 0 7 * * * python3 /home/foo/commit_mail/commit_mail.py --repos_dir='/home/foo/repos' --app_password='bar' --gmail_username='foo'
+```
+
+## Pre-commit Hook
+
+Here is the pre-commit hook that I configure locally for this repo:
+
+```
+#!/bin/bash
+
+echo "Running codespell..."
+codespell --skip="*.git,*.pyc,__pycache__" --quiet-level=2
+
+# Store the exit code of the spell check
+spell_exit_code=$?
+
+# If spell check failed, prevent the commit
+if [ $spell_exit_code -ne 0 ]; then
+  echo "Spell check failed. Please fix the typos before committing."
+  exit 1
+fi
+
+STAGED_PYTHON_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.py$')
+if [ -n "$STAGED_PYTHON_FILES" ]; then
+  echo "Checking Python formatting with yapf3..."
+  yapf3 --diff $STAGED_PYTHON_FILES
+  format_exit_code=$?
+  if [ $format_exit_code -ne 0 ]; then
+    echo "Formatting check failed."
+    echo "Run 'yapf3 -i <file>' to fix formatting issues, then stage and try committing again."
+    exit 1
+  fi
+
+  echo "Running pylint..."
+  pylint --output-format=text $STAGED_PYTHON_FILES
+  lint_exit_code=$?
+  # pylint returns a bitmask exit code, we're looking for 0 (no errors)
+  if [ $lint_exit_code -ne 0 ]; then
+    echo "Linting failed. Please fix the code style issues before committing."
+    exit 1
+  fi
+else
+  echo "No Python files to format or lint. Skipping."
+fi
+
+echo "Running unit tests..."
+python3 -m unittest discover -p "test_*.py"
+
+# Store the exit code of the test command
+test_exit_code=$?
+
+# If the tests failed, prevent the commit
+if [ $test_exit_code -ne 0 ]; then
+  echo "Tests failed. Commit aborted."
+  exit 1
+fi
+
+# If tests passed, allow the commit to proceed
+echo "Tests passed. Proceeding with commit."
+exit 0
 ```
