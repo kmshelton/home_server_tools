@@ -132,7 +132,8 @@ def _count_lines_by_extension(file_extension: str) -> int:
     try:
         return int(
             subprocess.check_output(
-                f'git ls-files | grep \\{file_extension}$ | xargs cat | wc -l',
+                # The \\ becomes a single \ in the actual shell command.
+                f'git ls-files | grep \'\\{file_extension}$\' | xargs cat | wc -l',
                 shell=True,
                 text=True))
     except subprocess.CalledProcessError:
