@@ -1,16 +1,17 @@
 # Home Server Tools
 
-Like most nerds, I run a home server for things like personal git repos and a
-database of all my books. My current hardware is a Chromebox, and I have flashed
-it with SeaBIOS to enable Ubuntu.
+Like most nerds, I run a home server for things like personal git repos, a
+database of all my books, and a gitea instance. My current hardware is a
+Chromebox flashed with SeaBIOS to enable Ubuntu.
 
 This collection of utilities runs on my home server.  The utilities:
-* generate a report of stats about my repos
+* generate a report of stats about the repos
 * generate a report of telemetry from the server itself
 * send out email with the reports
 
 Future work includes:
-* automatic backup of my repos
+* automatic backup of repos to Google Drive
+* diff a webpage
 
 ## Email Configuration
 
@@ -60,11 +61,8 @@ Here is the pre-commit hook that I configure locally for this repo:
 
 echo "Running codespell..."
 codespell --skip="*.git,*.pyc,__pycache__" --quiet-level=2
-
-# Store the exit code of the spell check
 spell_exit_code=$?
 
-# If spell check failed, prevent the commit
 if [ $spell_exit_code -ne 0 ]; then
   echo "Spell check failed. Please fix the typos before committing."
   exit 1
@@ -86,7 +84,7 @@ if [ -n "$STAGED_PYTHON_FILES" ]; then
   lint_exit_code=$?
   # pylint returns a bitmask exit code, we're looking for 0 (no errors)
   if [ $lint_exit_code -ne 0 ]; then
-    echo "Linting failed. Please fix the code style issues before committing."
+    echo "Linting failed. Please address the issues, then stage and try committing again."
     exit 1
   fi
 else
@@ -95,17 +93,13 @@ fi
 
 echo "Running unit tests..."
 python3 -m unittest discover -p "test_*.py"
-
-# Store the exit code of the test command
 test_exit_code=$?
 
-# If the tests failed, prevent the commit
 if [ $test_exit_code -ne 0 ]; then
   echo "Tests failed. Commit aborted."
   exit 1
 fi
 
-# If tests passed, allow the commit to proceed
 echo "Tests passed. Proceeding with commit."
 exit 0
 ```
